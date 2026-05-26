@@ -1,0 +1,72 @@
+# GenAI Developer Productivity Agent — Configuration
+# ============================================================
+
+app:
+  name: "GenAI Developer Productivity Agent"
+  version: "1.0.0"
+  debug: false
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+
+llm:
+  provider: "local"  # "openai" | "local"
+  openai:
+    api_key: "${OPENAI_API_KEY}"
+    model: "gpt-4o"
+    base_url: "https://api.openai.com/v1"
+    max_tokens: 4096
+    temperature: 0.3
+    timeout_seconds: 60
+  local:
+    simulated_latency_ms: 200
+    model_name: "local-simulation-v1"
+
+agents:
+  code_review:
+    enabled: true
+    max_code_length: 50000
+    timeout_seconds: 120
+  issue_classification:
+    enabled: true
+    categories:
+      - "bug"
+      - "feature"
+      - "enhancement"
+      - "documentation"
+      - "performance"
+      - "security"
+      - "refactoring"
+      - "testing"
+    priorities:
+      - "critical"
+      - "high"
+      - "medium"
+      - "low"
+    timeout_seconds: 60
+  suggestion:
+    enabled: true
+    max_code_length: 50000
+    timeout_seconds: 120
+
+resilience:
+  retry:
+    max_attempts: 3
+    wait_seconds: 1
+    exponential_base: 2
+  circuit_breaker:
+    failure_threshold: 5
+    recovery_timeout_seconds: 30
+  timeout:
+    default_seconds: 120
+
+monitoring:
+  metrics:
+    enabled: true
+    prefix: "genai_agent"
+  logging:
+    level: "INFO"
+    format: "json"
+  alerts:
+    error_threshold: 10
+    latency_threshold_ms: 5000
