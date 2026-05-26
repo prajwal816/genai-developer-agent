@@ -1,0 +1,46 @@
+# ============================================================
+# GenAI Developer Productivity Agent — Docker Compose
+# ============================================================
+
+version: "3.9"
+
+services:
+  genai-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: genai-developer-agent
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=GenAI Developer Productivity Agent
+      - APP_VERSION=1.0.0
+      - APP_DEBUG=false
+      - LLM_PROVIDER=local
+      - LOG_LEVEL=INFO
+      - METRICS_ENABLED=true
+    env_file:
+      - .env
+    volumes:
+      - ./configs:/app/configs:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health').raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "2.0"
+        reservations:
+          memory: 256M
+          cpus: "0.5"
+    networks:
+      - agent-network
+
+networks:
+  agent-network:
+    driver: bridge
